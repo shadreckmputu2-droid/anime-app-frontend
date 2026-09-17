@@ -97,7 +97,6 @@ export const api = {
     if (params.page) query.set('page', String(params.page))
     return request<AnimeListResponse>(`/api/anime?${query.toString()}`)
   },
-
   getAnime: (id: string) => request<Anime>(`/api/anime/${id}`),
 
   getWatchlist: () => request<WatchlistEntry[]>('/api/watchlist'),
@@ -110,8 +109,6 @@ export const api = {
   }) => request<WatchlistEntry>('/api/watchlist', { method: 'POST', body: JSON.stringify(data) }),
 
   removeFromWatchlist: (animeId: string) =>
-    request(`/api/watchlist/${animeId}`, { method: 'DELETE' }),
-    removeFromWatchlist: (animeId: string) =>
     request(`/api/watchlist/${animeId}`, { method: 'DELETE' }),
 
   getNews: (page = 1) => request<NewsListResponse>(`/api/news?page=${page}`),
