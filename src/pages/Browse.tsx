@@ -1,7 +1,22 @@
-import { useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
+import { useState, useEffect, FormEvent, MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { api, type Anime } from '../lib/api'
+
+function handleTiltMove(e: MouseEvent<HTMLElement>) {
+  const card = e.currentTarget
+  const rect = card.getBoundingClientRect()
+  const x = e.clientX - rect.left
+  const y = e.clientY - rect.top
+  const centerX = rect.width / 2
+  const centerY = rect.height / 2
+  const rotateX = ((y - centerY) / centerY) * -8
+  const rotateY = ((x - centerX) / centerX) * 8
+  card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.04)`
+}
+
+function handleTiltLeave(e: MouseEvent<HTMLElement>) {
+  e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)'
+}
 
 export function Browse() {
   const [anime, setAnime] = useState<Anime[]>([])
@@ -33,6 +48,9 @@ export function Browse() {
 
   return (
     <div className="page">
+      <div className="blob blob-1" />
+      <div className="blob blob-2" />
+
       <h1>Browse Anime</h1>
 
       <form onSubmit={handleSearch} className="search-bar">
@@ -50,13 +68,20 @@ export function Browse() {
 
       <div className="anime-grid">
         {anime.map((a) => (
-          <Link key={a.id} to={`/anime/${a.id}`} className="anime-card">
+          <Link
+            key={a.id}
+            to={`/anime/${a.id}`}
+            className="anime-card"
+            onMouseMove={handleTiltMove}
+            onMouseLeave={handleTiltLeave}
+          >
             {a.coverImageUrl && <img src={a.coverImageUrl} alt={a.title} />}
             <p className="anime-card-title">{a.title}</p>
           </Link>
         ))}
       </div>
-            {!loading && anime.length === 0 && <p>No anime found.</p>}
+
+      {!loading && anime.length === 0 && <p>No anime found.</p>}
     </div>
   )
 }
